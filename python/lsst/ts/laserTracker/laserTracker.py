@@ -1,7 +1,11 @@
 import logging
 
 class LaserTrackerComponent():
+    """
     
+    """
+    def __init__(self):
+        self.targets = ["M1M3", "M2", "CAM"]
 
     def get_tracker_status(self):
         """ Queries the laser tracker device for current overall status. 
@@ -18,7 +22,7 @@ class LaserTrackerComponent():
                 'ERR ??'    Error status. The ?? will be replaced by a numeric
                             error code
         """
-        pass
+        self.send_msg("?STAT")
     
     def get_laser_status(self):
         """ Queries the laser tracker device for the state of the laser.
@@ -34,7 +38,7 @@ class LaserTrackerComponent():
                 'LON'       Laser On
                 'LOFF'      Laser Off
         """
-        pass
+        self.send_msg("?LSTA")
     
     def get_position(self, target):
         """ Queries for the last measurement of a particular target.
@@ -54,10 +58,13 @@ class LaserTrackerComponent():
                 <n> are double precision floats, and date is the datetime
                 the measurement was taken in the format 'MM/dd/yy H:mm:ss'
         """
-        pass
+        if target in self.targets:
+            self.send_msg("?POS " + target)
+        else:
+            raise Exception
 
     def execute_measurement(self, target):
-        """ Executes the measurement of the specified target.
+        """ Executes the measurement plan for the specified target.
 
             Parameters
             ----------
@@ -70,7 +77,10 @@ class LaserTrackerComponent():
             -------
             None
         """
-        pass
+        if target in self.targets:
+            self.send_msg("!CMD " + "MP" + target)
+        else:
+            raise Exception
 
     def clear_error(self):
         """ Clears errors. 
@@ -83,7 +93,7 @@ class LaserTrackerComponent():
             -------
             None
         """
-        pass
+        self.send_msg("!CLER")
     
     def laser_off(self):
         """ Turn laser off. Laser will turn on automatically when
@@ -97,6 +107,9 @@ class LaserTrackerComponent():
             -------
             None
         """
-        pass
+        self.send_msg("!CMD TLOFF")
+
+    def send_msg(self, msg):
+        outgoing = msg + "\r\n"
 
     
